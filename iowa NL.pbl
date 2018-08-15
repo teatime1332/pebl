@@ -68,8 +68,7 @@
  ## that the "hint" about staying away from the worst decks is critical to
  ## obtaining above-chance performance in the IGT.
 
-define Start(lPar)
-{
+define Start(lPar) {
 
   parpairs <- [["numtrials",200],
                   ["DelayBetweenTrials",500],
@@ -77,26 +76,20 @@ define Start(lPar)
 		  ["shuffledecks",0], ##whether decks should be shuffled default is off
 		  ["startvalue",0],
 		  ["outcomedelay",2500],
-		  ["playsounds",0]
-                 ]
-
+		  ["playsounds",0]]
 
   gParams <- CreateParameters(parpairs,gParamFile)
-
 
   ## Define number of trials.
   numtrials <- gParams.numtrials
 
-
   ## Specify whether the mouse or keyboard should be used to respond.
   gUseMouse <- gParams.usemouse
 
-
-  if(gUseMouse)
-  {
+  if(gUseMouse) {
     tag <- "-mouse"
-  } else
-  {
+  } 
+  else {
     tag <- "-keyboard"
   }
 
@@ -122,8 +115,7 @@ define Start(lPar)
   ## Optionally, define a range of sounds to be selected randomly.
 
   ## Results are stored in tmpresults.dat.
-  if(gSubNum + "" == "0")
-  {
+  if(gSubNum + "" == "0") {
     gSubNum <- GetSubNum(gWin)	
   }
 
@@ -138,8 +130,8 @@ define Start(lPar)
   gDisplayCounter <- 1
 
   ## Specify log file name and write column headings.
-#  gFileOut <- FileOpenWrite("Log IGT ID-" + gSubNum + ".txt")
-#  FilePrint(gFileOut, "Subject Trial Deck Win1 Win2 Lose1 Lose2 Net Score Time RT")
+  #  gFileOut <- FileOpenWrite("Log IGT ID-" + gSubNum + ".txt")
+  #  FilePrint(gFileOut, "Subject Trial Deck Win1 Win2 Lose1 Lose2 Net Score Time RT")
   ## results are stored in tmpresults.dat
   gFileOut <- GetNewDataFile(gSubNum,gWin,"igtlog","csv",
      "subNum,version,trialnum,chosendeck,win1,win2,lose1,lose2,net,totalscore,time,rt")
@@ -232,8 +224,7 @@ define Start(lPar)
                0,0,0,0,0,0,0,0,0,0,
                0,0,0,0,0,0,0,0,0,0]
 
-  if(shuffleDecks)
-  {
+  if(shuffleDecks) {
     deck1Pen <- EpochShuffle(deck1Pen)
     deck2Pen <- EpochShuffle(deck2Pen)
     deck3Pen <- EpochShuffle(deck3Pen)
@@ -250,8 +241,7 @@ define Start(lPar)
   #inst2 <- Nth(textlist, 2)
   #inst3 <- Nth(textlist, 3)
 
-  if(gLanguage == "he")
-  {
+  if(gLanguage == "he") {
     gInstructions.direction <- (-1)
     gFooter0.direction <- (-1)
     gFooter.direction <- (-1) 
@@ -335,8 +325,7 @@ define Start(lPar)
              deck1l, deck2l, deck3l, deck4l]
 
   ## Add the deck outlines to the window.
-  loop(i, deckUI)
-  {
+  loop(i, deckUI) {
     AddObject(i, gWin)
   }
  
@@ -351,16 +340,15 @@ define Start(lPar)
   AddObject(gPenaltyImage, gWin); Move(gPenaltyImage, gVideoWidth/2-300, gVideoHeight/2-60); Hide(gPenaltyImage)  
 
   ## Add the card faces (red or black) to the window.
-  loop(i, gui)
-  {
+  loop(i, gui) {
     AddObject(i, gWin)
     Hide(i)
   }
   
   ## Label the decks.
   x <- gBaseX
-  loop(i, textUI) 
-  {
+  
+  loop(i, textUI) {
     AddObject(i, gWin)
     Move(i, x, gBaseY-100)
     x <- x + 150
@@ -398,28 +386,24 @@ define Start(lPar)
   #####################################################################
 
   trialnum <- 1
-  while(trialnum <= numtrials)
-  {
+  
+  while(trialnum <= numtrials) {
     time0 <- GetTime()
 
-	## Get a response from the subject (using mouse or keyboard).
+    ## Get a response from the subject (using mouse or keyboard).
     ## Modified to allow use of ABCD or other labels (e.g., A'B'C'D' or EFGH).
-    if(gUseMouse)
-    {
+    if(gUseMouse) {
       resp <- WaitForClickOnTarget([deck1,deck2,deck3,deck4],
                                    [deck1label,deck2label,deck3label,deck4label])
-    } else {
+    } 
+    else {
       Draw()
       key <- WaitForListKeyPress(["1","2","3","4"])
-      if(key == "1") {
-	    resp <- deck1label
-      } elseif(key == "2") {
-	    resp <- deck2label
-      } elseif(key == "3") {
-        resp <- deck3label
-      } elseif(key == "4") {
-        resp <- deck4label
-      }
+      
+      if(key == "1") { resp <- deck1label } 
+      elseif(key == "2") { resp <- deck2label } 
+      elseif(key == "3") { resp <- deck3label } 
+      elseif(key == "4") { resp <- deck4label }
     }
 
     time1 <- GetTime()
@@ -427,281 +411,349 @@ define Start(lPar)
     Draw()
 
     ## Depending on deck chosen, update net gain and select card color.
-    if(resp == deck1label)
-    {
+    if(resp == deck1label) {
       reward1 <- First(deck1rew1)
-      if(reward1 == -1)
-      {
-		reward1 <- 0
+      
+      if(reward1 == -1) {
+	reward1 <- 0
         deckX <- deck1l
-      } elseif(reward1 == 0) {
+      } 
+      elseif(reward1 == 0) {
         deckX <- deck1g
-      } else {
+      } 
+      else {
         deckX <- deck1l
       }
+      
       reward2 <- First(deck1rew2)
-      if(reward2 == -1)
-      {
-		reward2 <- 0
+      
+      if(reward2 == -1) {
+	reward2 <- 0
         deckX <- deck1l
-      } elseif(reward2 == 0) {
+      } 
+      elseif(reward2 == 0) {
         deckX <- deck1g
-      } else {
+      } 
+      else {
         deckX <- deck1l
       }
+      
       penalty1 <- First(deck1pen1)
-      if(penalty1 == -1) # The flag -1 indicates red card but no loss.
-      {
-		penalty1 <- 0
+      
+      # The flag -1 indicates red card but no loss
+      if(penalty1 == -1) {
+	penalty1 <- 0
         deckX <- deck1l
-      } elseif(penalty1 == 0) {
+      } 
+      elseif(penalty1 == 0) {
         deckX <- deck1g
-      } else {
+      } 
+      else {
         deckX <- deck1l
       }
+      
       penalty2 <- First(deck1pen2)
-      if(penalty2 == -1) # The flag -1 indicates red card but no loss.
-      {
-		penalty2 <- 0
+      
+      # The flag -1 indicates red card but no loss.
+      if(penalty2 == -1) {
+	penalty2 <- 0
         deckX <- deck1l
-      } elseif(penalty2 == 0) {
+      } 
+      elseif(penalty2 == 0) {
         deckX <- deck1g
-      } else {
+      } 
+      else {
         deckX <- deck1l
       }
+      
       net <- reward1 + reward2 - penalty1 - penalty2
+      
       ## Move card to back of deck. Specify deck image to hide.
       deck1rew1 <- Rotate(deck1rew1, 1)      
       deck1rew2 <- Rotate(deck1rew2, 1) 
       deck1pen1 <- Rotate(deck1pen1, 1)
       deck1pen2 <- Rotate(deck1pen2, 1)
-	  deckXimg <- deck1img
-    } elseif(resp == deck2label) {
+      
+      deckXimg <- deck1img
+    } 
+    elseif(resp == deck2label) {
       reward1 <- First(deck2rew1)
-      if(reward1 == -1)
-      {
-		reward1 <- 0
+      
+      if(reward1 == -1) {
+	reward1 <- 0
         deckX <- deck2l
-      } elseif(reward1 == 0) {
+      } 
+      elseif(reward1 == 0) {
         deckX <- deck2g
-      } else {
+      } 
+      else {
         deckX <- deck2l
       }
+      
       reward2 <- First(deck2rew2)
-      if(reward2 == -1)
-      {
-		reward2 <- 0
+      
+      if(reward2 == -1) {
+	reward2 <- 0
         deckX <- deck2l
-      } elseif(reward2 == 0) {
+      } 
+      elseif(reward2 == 0) {
         deckX <- deck2g
-      } else {
+      } 
+      else {
         deckX <- deck2l
       }
+      
       penalty1 <- First(deck2pen1)
-      if(penalty1 == -1) # The flag -1 indicates red card but no loss.
-      {
-		penalty1 <- 0
+      
+      # The flag -1 indicates red card but no loss.
+      if(penalty1 == -1) {
+	penalty1 <- 0
         deckX <- deck2l
-      } elseif(penalty1 == 0) {
+      } 
+      elseif(penalty1 == 0) {
         deckX <- deck2g
-      } else {
+      } 
+      else {
         deckX <- deck2l
       }
+      
       penalty2 <- First(deck2pen2)
-      if(penalty2 == -1) # The flag -1 indicates red card but no loss.
-      {
-		penalty2 <- 0
+      
+      # The flag -1 indicates red card but no loss.
+      if(penalty2 == -1) {
+	penalty2 <- 0
         deckX <- deck2l
-      } elseif(penalty2 == 0) {
+      } 
+      elseif(penalty2 == 0) {
         deckX <- deck2g
-      } else {
+      } 
+      else {
         deckX <- deck2l
       }
+      
       net <- reward1 + reward2 - penalty1 - penalty2
+      
       ## Move card to back of deck. Specify deck image to hide.
       deck2rew1 <- Rotate(deck2rew1, 1)      
       deck2rew2 <- Rotate(deck2rew2, 1) 
       deck2pen1 <- Rotate(deck2pen1, 1)
       deck2pen2 <- Rotate(deck2pen2, 1)
-	  deckXimg <- deck2img
-    } elseif(resp == deck3label) {
+      
+      deckXimg <- deck2img
+    } 
+    elseif(resp == deck3label) {
       reward1 <- First(deck3rew1)
-      if(reward1 == -1)
-      {
-		reward1 <- 0
+      
+      if(reward1 == -1) {
+	reward1 <- 0
         deckX <- deck3l
-      } elseif(reward1 == 0) {
+      } 
+      elseif(reward1 == 0) {
         deckX <- deck3g
-      } else {
+      } 
+      else {
         deckX <- deck3l
       }
+      
       reward2 <- First(deck3rew2)
-      if(reward2 == -1)
-      {
-		reward2 <- 0
+      
+      if(reward2 == -1) {
+	reward2 <- 0
         deckX <- deck3l
-      } elseif(reward2 == 0) {
+      } 
+      elseif(reward2 == 0) {
         deckX <- deck3g
-      } else {
+      } 
+      else {
         deckX <- deck3l
       }
+      
       penalty1 <- First(deck3pen1)
-      if(penalty1 == -1) # The flag -1 indicates red card but no loss.
-      {
-		penalty1 <- 0
+      
+      #  The flag -1 indicates red card but no loss.
+      if(penalty1 == -1) {
+	penalty1 <- 0
         deckX <- deck3l
-      } elseif(penalty1 == 0) {
+      } 
+      elseif(penalty1 == 0) {
         deckX <- deck3g
-      } else {
+      } 
+      else {
         deckX <- deck3l
       }
+      
       penalty2 <- First(deck3pen2)
-      if(penalty2 == -1) # The flag -1 indicates red card but no loss.
-      {
-		penalty2 <- 0
+      
+      # The flag -1 indicates red card but no loss.
+      if(penalty2 == -1) {
+	penalty2 <- 0
         deckX <- deck3l
-      } elseif(penalty2 == 0) {
+      } 
+      elseif(penalty2 == 0) {
         deckX <- deck3g
-      } else {
+      } 
+      else {
         deckX <- deck3l
       }
+      
       net <- reward1 + reward2 - penalty1 - penalty2
+      
       ## Move card to back of deck. Specify deck image to hide.
       deck3rew1 <- Rotate(deck3rew1, 1) 
       deck3rew2 <- Rotate(deck3rew2, 1)      
       deck3pen1 <- Rotate(deck3pen1, 1)
       deck3pen2 <- Rotate(deck3pen2, 1)
-	  deckXimg <- deck3img
-    } elseif(resp == deck4label) {
+      
+      deckXimg <- deck3img
+    } 
+    elseif(resp == deck4label) {
       reward1 <- First(deck4rew1)
-      if(reward1 == -1)
-      {
-		reward1 <- 0
+    
+      if(reward1 == -1) {
+	reward1 <- 0
         deckX <- deck4l
-      } elseif(reward1 == 0) {
+      } 
+      elseif(reward1 == 0) {
         deckX <- deck4g
-      } else {
+      } 
+      else {
         deckX <- deck4l
       }
+      
       reward2 <- First(deck4rew2)
-      if(reward2 == -1)
-      {
-		reward2 <- 0
+      
+      if(reward2 == -1) {
+	reward2 <- 0
         deckX <- deck4l
-      } elseif(reward2 == 0) {
+      } 
+      elseif(reward2 == 0) {
         deckX <- deck4g
-      } else {
+      } 
+      else {
         deckX <- deck4l
       }
+      
       penalty1 <- First(deck4pen1)
-      if(penalty1 == -1) # The flag -1 indicates red card but no loss.
-      {
-		penalty1 <- 0
+      
+      # The flag -1 indicates red card but no loss.
+      if(penalty1 == -1) {
+	penalty1 <- 0
         deckX <- deck4l
-      } elseif(penalty1 == 0) {
+      } 
+      elseif(penalty1 == 0) {
         deckX <- deck4g
-      } else {
+      } 
+      else {
         deckX <- deck4l
       }
+      
       penalty2 <- First(deck4pen2)
-      if(penalty2 == -1) # The flag -1 indicates red card but no loss.
-      {
-		penalty2 <- 0
+      
+      # The flag -1 indicates red card but no loss.
+      if(penalty2 == -1) {
+	penalty2 <- 0
         deckX <- deck4l
-      } elseif(penalty2 == 0) {
+      } 
+      elseif(penalty2 == 0) {
         deckX <- deck4g
-      } else {
+      } 
+      else {
         deckX <- deck4l
       }
+      
       net <- reward1 + reward2 - penalty1 - penalty2
+      
       ## Move card to back of deck. Specify deck image to hide.
       deck4rew1 <- Rotate(deck4rew1, 1)  
       deck4rew2 <- Rotate(deck4rew2, 1)    
       deck4pen1 <- Rotate(deck4pen1, 1)
       deck4pen2 <- Rotate(deck4pen2, 1)
-	  deckXimg <- deck4img
+      
+      deckXimg <- deck4img
     }
 
     ## Specify the reward text (green) or penalty text (red).
+    if(reward1 >0) {
+      gFooter0.text <- "Deck " + resp + ": "
+      SetFont(gFooter0, gStimFont) 
+      gFooter.text <- "                  " + textreward + reward1
+      SetFont(gFooter, gCorrFont)
+      gFooter2.text <- "       and " + textreward + reward2
+      SetFont(gFooter2, gCorrFont)
+      Hide(deckXimg)
+      Show(deckX)
+      Hide(gHeader)
+      Show(gFooter0)
+      Show(gFooter)
+      Show(gFooter2)
+      #Show(gRewardImage)
+      Draw()
+      # gRewardSounds <- Shuffle(gRewardSounds)
+      # PlayForeground(First(gRewardSounds))
+    
+      if(gParams.playsounds) {
+        PlayBackground(gRewardSound)
+       }
 
-if(reward1 >0) {
-    gFooter0.text <- "Deck " + resp + ": "
-    SetFont(gFooter0, gStimFont) 
-    gFooter.text <- "                  " + textreward + reward1
-    SetFont(gFooter, gCorrFont)
-    gFooter2.text <- "       and " + textreward + reward2
-    SetFont(gFooter2, gCorrFont)
-Hide(deckXimg)
-    Show(deckX)
-    Hide(gHeader)
-    Show(gFooter0)
-    Show(gFooter)
-    Show(gFooter2)
-	#Show(gRewardImage)
-    Draw()
-    # gRewardSounds <- Shuffle(gRewardSounds)
-    # PlayForeground(First(gRewardSounds))
-    if(gParams.playsounds)
-     {
-      PlayBackground(gRewardSound)
-     }
+      Wait(gparams.outcomedelay)
+    } 
+    else {
+      gFooter0.text <- "Deck " + resp + ": "
+      SetFont(gFooter0, gStimFont)
+      gFooter.text <- "                  " + textpenalty + penalty1
+      SetFont(gFooter, gIncorrFont)
+      gFooter2.text <- "       and " + textpenalty + penalty2
+      SetFont(gFooter2, gIncorrFont)
+      Hide(deckXimg)
+      Show(deckX)
+      Hide(gHeader)
+      Show(gFooter0)
+      Show(gFooter)
+      Show(gFooter2)
+      #Show(gPenaltyImage)
+      Draw()
+      # gRewardSounds <- Shuffle(gPenaltySounds)
+      # PlayForeground(First(gPenaltySounds))
+      
+      if(gParams.playsounds) {
+        PlayBackground(gPenaltySound)
+      }
 
-    Wait(gparams.outcomedelay)
-} else {
-  	gFooter0.text <- "Deck " + resp + ": "
-	SetFont(gFooter0, gStimFont)
-  	gFooter.text <- "                  " + textpenalty + penalty1
-	SetFont(gFooter, gIncorrFont)
-  	gFooter2.text <- "       and " + textpenalty + penalty2
-	SetFont(gFooter2, gIncorrFont)
-Hide(deckXimg)
-    Show(deckX)
-    Hide(gHeader)
-    Show(gFooter0)
-    Show(gFooter)
-    Show(gFooter2)
-	#Show(gPenaltyImage)
-    Draw()
-    # gRewardSounds <- Shuffle(gPenaltySounds)
-    # PlayForeground(First(gPenaltySounds))
-    if(gParams.playsounds)
-     {
-      PlayBackground(gPenaltySound)
-     }
+      Wait(gparams.outcomedelay)
+    }
 
-    Wait(gparams.outcomedelay)
-}
-
-	## Calculate the new total and update display.
+    ## Calculate the new total and update display.
     gTotal <- gTotal + net
     gTotalLabel.text <- totstring
     gTotalLabel2.text <- " " + gTotal
-	if (gTotal>0)
-	{
-    		gTotalLabel2.text <- " " + gTotal
-    		SetFont(gTotalLabel2,gCurrTotalPosFont)
-	} elseif (gTotal<0){
-    		gTotalLabel2.text <- " " + gTotal
-    		SetFont(gTotalLabel2,gCurrTotalNegFont)
-	} else {
-    		gTotalLabel2.text <- " " + gTotal
-    		SetFont(gTotalLabel2,gCurrTotalFont)			
-	}
+    
+    if (gTotal>0) {
+      gTotalLabel2.text <- " " + gTotal
+      SetFont(gTotalLabel2,gCurrTotalPosFont)
+    } 
+    elseif (gTotal<0) {
+      gTotalLabel2.text <- " " + gTotal
+      SetFont(gTotalLabel2,gCurrTotalNegFont)
+    } 
+    else {
+      gTotalLabel2.text <- " " + gTotal
+      SetFont(gTotalLabel2,gCurrTotalFont)			
+    }
 
     ## Update the bar graph.
-	#RemoveComplex(earnings)
+    #RemoveComplex(earnings)
     #earnings <- MakeEarningsGraph(gTotal)
 
     ## Reset the window display for the next trial.
-    if(trialnum < numtrials)
-	{
+    if(trialnum < numtrials) {
       Hide(deckX)
-	  Show(deckXimg)
+      Show(deckXimg)
       Hide(gFooter0)
       Hide(gFooter)
       Hide(gFooter2)
       Show(gHeader)
-	}
+    }
+    
     Hide(gRewardImage)
     Hide(gPenaltyImage)
     Draw()
@@ -716,8 +768,7 @@ Hide(deckXimg)
   Wait(1000)
 
   ## Remove all the graphical elements.
-  loop(i, gui)
-  {
+  loop(i, gui) {
     Hide(i)
   }
 
@@ -730,11 +781,10 @@ Hide(deckXimg)
   #feed3 <- Nth(textlist, 16)
 
   ## Prefix debriefing info with "Congratulations!" if they did well.
-  #if(gTotal > (gBorrow+numtrials*15)) 
-  #{
+  #if(gTotal > (gBorrow+numtrials*15)) {
     #feedback <- feed2 + " "
-  #} else
-  #{
+  #} 
+  #else {
     #feedback <- ""
   #}
 
@@ -754,8 +804,7 @@ Hide(deckXimg)
 ##  objects used in experiments.
 #####################################################################
 
-define Initialize()
-{
+define Initialize() {
 #  gVideoWidth <- 1024
 #  gVideoheight <- 768
 
@@ -787,8 +836,7 @@ define Initialize()
   Print("--------------------------------")
   PrintPRoperties(gInstructions)
 
-  if(gLanguage=="he")
-  {
+  if(gLanguage=="he") {
     gInstructions.direction <- (-1)
   }
 
@@ -828,8 +876,7 @@ define Initialize()
 ## Requires a 40-item list.
 #####################################################################
 
-define EpochShuffle(list)
-{
+define EpochShuffle(list) {
   order <- Flatten(
   [Shuffle(Sequence(1,10,1)),
    Shuffle(Sequence(11,20,1)),
@@ -842,8 +889,7 @@ define EpochShuffle(list)
 ## Plots the graph.
 #####################################################################
 
-define MakeEarningsGraph(earnings)
-{
+define MakeEarningsGraph(earnings) {
   ## Basic parameters for plotting the graph at the top of the screen.
   scale <- 14
   height <- 20
@@ -852,10 +898,10 @@ define MakeEarningsGraph(earnings)
   ycenter <- gVideoHeight/2 - 240
 
   ## Determine which color to make the cash bar.
-  if(earnings < 0) 
-  {
+  if(earnings < 0) {
     cashBarCol <- gColRed
-  } else {
+  } 
+  else {
     cashBarCol <- gColGreen
   }
   ## Borrow bar is red.
@@ -895,14 +941,14 @@ define MakeEarningsGraph(earnings)
   ## These labels are all re-created each trial--they could be
   ## static, which would be a little more efficient, but it is really 
   ## fast as is.
-  loop(i, yvals)
-  { 
+  loop(i, yvals) { 
     yy <- MakeLabel(i + "", gGraphFont)
     AddObject(yy, gWin)
     Move(yy, xcenter + (i/scale), ycenter - 20)
     Show(yy)
     composite <- Append(composite, yy)
   }
+  
   return composite
 } # End of function MakeEarningsGraph().
 
@@ -910,10 +956,8 @@ define MakeEarningsGraph(earnings)
 ## Function used to remove bar graph.
 #####################################################################
 
-define RemoveComplex(x)
-{ 
-  loop(i,x)
-  {
+define RemoveComplex(x) { 
+  loop(i,x) {
     RemoveObject(i, gWin)
   }
 } # End of function RemoveComplex().
@@ -922,13 +966,12 @@ define RemoveComplex(x)
 ## Monitors for mouse clicks or key presses.
 #####################################################################
 
-define WaitForIt()
-{
-  if(gUseMouse)
-  {
+define WaitForIt() {
+  if(gUseMouse) {
     Draw()
     WaitForDownClick()
-  } else {
+  } 
+  else {
     WaitForAnyKeyPress()
   }
 } # End of function WaitForIt().
