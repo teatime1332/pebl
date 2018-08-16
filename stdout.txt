@@ -1,0 +1,39 @@
+SUCCESS at getting display mode?:0
+1680,1050,60
+Parameters used:
+----------
+[DELAYBETWEENTRIALS]: 600
+[NUMTRIALS]: 100
+[OUTCOMEDELAY]: 2500
+[PLAYSOUNDS]: 0
+[SHUFFLEDECKS]: 0
+[STARTVALUE]: 0
+[USEMOUSE]: 1
+----------
+Initializing 1680--1050
+Driver name (0): direct3d
+Driver name (1): opengl
+Driver name (2): opengles2
+Driver name (3): software
+--------------------------------
+----------
+[BGCOLOR]: <PColor: Red: [255] Green: [255] Blue: [255] Alpha: [255] Color Code: [-50070016]>
+
+[CURSORPOS]: 0
+[DIRECTION]: 1
+[EDITABLE]: 0
+[HEIGHT]: 500
+[JUSTIFY]: LEFT
+[LINEHEIGHT]: 27
+[LINEWRAP]: 1
+[NAME]: <TEXTBOX>
+[PARENT]: 0
+[ROTATION]: 0
+[TEXT]: 
+[VISIBLE]: 1
+[WIDTH]: 600
+[X]: 0
+[Y]: 0
+[ZOOMX]: 1
+[ZOOMY]: 1
+----------
