@@ -1,0 +1,423 @@
+ ## Copyright (c) 2006-2011 Shane T. Mueller
+ ## smueller@obereed.net
+ ##
+ ## Modified by Peter Bull (2012) to more closely resemble the
+ ## task described in Bechara, Damasio, Damasio, & Lee (1999).
+ ## See notes below Mueller's comments, and additional comments
+ ## throughout the code.
+ ##
+ ## PEBL Bechara's Gambling Task
+ ## (a version of the so-called Iowa Gambling Task)
+ ## This task is not officially endorsed by A. Bechara, A. Damasio, 
+ ## or any other researchers or organizations affiliated with the 
+ ## "Iowa" gambling task.
+ ##
+ ## Bechara, A., Damasio, A. R., Damasio, H., & Anderson,  S.W. (1994). 
+ ## Insensitivity to future consequences following damage to human
+ ## prefrontal cortex. Cognition, 50, 7-15.
+ ##
+ ## For use with PEBL 0.10 or later
+ ## http://pebl.sf.net
+ ## Part of The PEBL Psychological Testing Battery
+
+#####################################################################
+##  Custom utility functions.
+#####################################################################
+
+define ReduceList(list) {
+  
+  reducedList <- []
+  append <- "True"
+  
+  loop(i,list) {
+  
+    loop(j,reducedList) {
+	  if (i == j) { 
+	    append <- "False"
+	  }
+	}
+	
+	if (append == "True") {
+	  PushOnEnd(reducedList,i)
+	}
+	
+	append <- "True"
+  }
+  
+  return( Sort(reducedList) )
+}
+
+## Print properties to console for debugging.
+
+define DebugConsole() {
+  Print("--------------------------------")
+  PrintProperties(gInstrTextBox)
+
+}
+ 
+#####################################################################
+##  Define gui object properties (e.g., colors, fonts, etc.)
+#####################################################################
+
+define SetGuiProperties() {
+  #gVideoWidth <- 1024
+  #gVideoheight <- 768
+
+  # Added by Peter Bull so objects can be more easily moved around.
+  gBaseX <- (gVideoWidth/2) - 100
+  gBaseY <- (gVideoHeight/2) + 200
+  
+  ## Initialize window
+  gWindow <- MakeWindow("white")   
+            
+  ## Initialize font and colors
+  gColorWhite  <- MakeColor("white")
+  gColorBlack  <- MakeColor("black")
+  gColorBlue   <- MakeColor("blue")
+  gFontNameMono <- gPEBLBaseFont     # defaults to "VeraMono.ttf"
+  gFontNameBase <- gPEBLBaseFont     # defaults to "Vera.ttf" )       
+  g22Font <- MakeFont(gFontNameBase, 0, 22, gColorBlack, gColorWhite, 0)  
+  g28Font <- MakeFont(gFontNameBase, 0, 28, gColorBlack, gColorWhite, 0) 
+  g36Font <- MakeFont(gFontNameMono, 0, 36, gColorBlack, gColorWhite, 0)  
+ 
+  ## Initialize text list and fonts
+  gtextlist <- FileReadList(Lowercase("text/instructions-mouse.txt"))
+  gInstrString	   <- Nth(gtextlist, 1)
+  gPickCardString  <- Nth(gtextlist, 2)
+  gTotalString 	   <- Nth(gtextlist, 3)
+  gFeedbackString  <- Nth(gtextlist, 4)
+  gDeckLeftString  <- "Left"
+  gDeckRightString <- "Right"
+  gDeckStringList  <- [gDeckLeftString,gDeckRightString]
+  
+  ## Media files
+  gDeckImageFileBlue    <- "media/bluecard.png"
+  gDeckImageFileRed	    <- "media/redcard.png"
+  gDeckImageFile		<- "media/deck.png"
+}
+
+#####################################################################
+##  Set GUI objects
+#####################################################################
+
+define SetGuiObjects() {
+  ## Make and place the instruction box, then hide it.
+  gInstrTextBox <- MakeTextBox("", g22Font, 600, 500)
+  SetText(gInstrTextBox, gInstrString)
+  AddObject(gInstrTextBox, gWindow)
+  Move(gInstrTextBox, gVideoWidth/2-300, gVideoHeight/2-200)
+
+  
+  ## Modified to use MakeLabel() instead of MakeTextBox() so text is centered.
+  gResponseTextBox <- MakeLabel("", g36Font)
+  AddObject(gResponseTextBox, gWindow)
+  
+  ## Modified to use MakeLabel() instead of MakeTextBox() so text is centered.
+  gOrLeftTextBox <- MakeLabel(" ", g22Font)
+  AddObject(gOrLeftTextBox, gWindow)
+  SetFont(gOrLeftTextBox, g22Font) 
+  Move(gOrLeftTextBox, gBaseX, gBaseY-140)
+  
+  ## Modified to use MakeLabel() instead of MakeTextBox() so text is centered.
+  gOrRightTextBox <- MakeLabel(" ", g22Font)
+  AddObject(gOrRightTextBox, gWindow)
+  SetFont(gOrRightTextBox, g22Font) 
+  Move(gOrRightTextBox, gBaseX+200, gBaseY-140)
+      
+  
+  ## Add the total display to the window: actual outcome
+  gTotalLabel2 <- MakeLabel(" ", g36Font)
+  AddObject(gTotalLabel2, gWindow)
+  SetFont(gTotalLabel2,g36Font) 
+  Move(gTotalLabel2, gVideoWidth/1.55, gVideoHeight/2-310) 
+}
+
+
+#####################################################################
+##  Set runtime objects
+#####################################################################
+
+define SetDecks() {
+  ## "pick a deck" text box
+  gPickCardTextBox <- MakeLabel("", g28Font)
+  AddObject(gPickCardTextBox, gWindow)
+  gPickCardTextBox.text <- gPickCardString
+  Move(gPickCardTextBox, gVideoWidth/2, gVideoHeight/2+350)
+
+  
+  ## "total earnings" text box
+  gTotalLabel <- MakeLabel(gTotalString, g36Font)
+  AddObject(gTotalLabel, gWindow)
+  Move(gTotalLabel, gVideoWidth/2.1, gVideoHeight/2-310)
+  
+  
+  ## Create lists of the deck properties for easier management.
+  gDeckObjectList  <- []
+  gDeckTagList     <- []
+  gDeckImageList   <- []
+  
+  offset <- 0
+  index <- 1
+  
+  loop(i,gDeckStringList) {  
+	deckObject  <- Rectangle(gBaseX,gBaseY,100,150,gColorBlack,0)
+	deckTag     <- MakeLabel( Nth(gDeckStringList,index), g28Font)
+	
+	if ((gcondition1 == "bhi") or (gcondition1 == "blo")) {
+	  if (index == 1) {
+	    deckImage   <- MakeImage(gDeckImageFileBlue)
+	  } elseif (index == 2) {
+	    deckImage   <- MakeImage(gDeckImageFileRed)	  
+	  }
+	  
+	} elseif ((gcondition1 == "rhi") or (gcondition1 == "rlo")) {
+	  if (index == 1) {
+	    deckImage   <- MakeImage(gDeckImageFileRed)
+	  } elseif (index == 2) {
+	    deckImage   <- MakeImage(gDeckImageFileBlue)	  
+	  }
+	  
+	} else {
+	  deckImage   <- MakeImage(gDeckImageFile)
+	}
+    
+	PushOnEnd(gDeckObjectList,deckObject)
+	PushOnEnd(gDeckTagList,deckTag)
+	PushOnEnd(gDeckImageList,deckImage)
+	
+	## Add the deck outlines to the window
+	AddObject(deckObject, gWindow)
+	
+	## Add the deck images to the window.
+	AddObject(deckImage, gWindow) 
+	Move(deckImage, gBaseX+offset, gBaseY)
+
+	## Tag the decks.
+    AddObject(deckTag, gWindow)
+    Move(deckObject, gBaseX+offset, gBaseY)
+	
+	offset <- offset + 200
+	index <- index + 1
+  }
+  
+}
+
+#####################################################################
+##  Process inputs
+#####################################################################
+
+define SetInputs(lPar) {			
+
+  gcondition1 <- Nth(lPar,1)
+  gcondition2 <- Nth(lPar,2)
+
+  inputLists <- FileReadTable("input.csv",",")
+  ghiEVList        <- []
+  glowEVList       <- []
+  
+  i <- 2
+  while(i <= Length(inputLists)) {
+    row <- Nth(inputLists,i)
+    PushOnEnd(ghiEVList,      ToNumber(Nth(row,1)) )
+    PushOnEnd(glowEVList,     ToNumber(Nth(row,2)) )
+    i <- i + 1
+  }
+  
+  ghiEVListReduced <- ReduceList(ghiEVList)
+  glowEVListReduced <- ReduceList(glowEVList)
+
+  textTag <- ""
+  
+  if (gcondition2 == "ds") {
+    textTag <- " or "
+  } elseif (gcondition2 == "dr") {
+    textTag <- "-"
+  } else {
+    textTag <- ""
+  }
+  
+  if ((gcondition1 == "bhi") or (gcondition1 == "rhi")) {
+  gOrLeftTextBox.text <- ToString(First(ghiEVListReduced)) + 
+                         textTag + 
+						 ToString(Last(ghiEVListReduced))
+
+  gOrRightTextBox.text  <- ToString(First(glowEVListReduced)) + 
+                           textTag + 
+					       ToString(Last(glowEVListReduced))
+  
+  } else {
+    gOrLeftTextBox.text <- ToString(First(glowEVListReduced)) + 
+                           textTag + 
+	                       ToString(Last(glowEVListReduced))
+
+    gOrRightTextBox.text  <- ToString(First(ghiEVListReduced)) + 
+                             textTag + 
+		    	             ToString(Last(ghiEVListReduced))
+  }
+ 
+  if ((gcondition2 != "ds") and (gcondition2 != "dr")) {
+    gOrLeftTextBox.text <- ""
+	gOrRightTextBox.text <- ""
+  }
+  
+  
+  parpairs <- [ ["numtrials",Length(ghiEVList)],
+                ["DelayBetweenTrials",500],
+		        ["outcomedelay",1500] ] 
+  
+  gParams <- CreateParameters(parpairs,gParamFile)
+}
+
+
+#####################################################################
+##  Entry point. "Main" function.
+##################################################################### 
+ 
+define Start(lPar) {
+
+  SetGuiProperties()
+  SetGuiObjects()
+  SetInputs(lPar) 
+  
+  ## Results are stored in tmpresults.dat.
+  if(gSubNum + "" == "0") {
+    gSubNum <- GetSubNum(gWindow)	
+  }
+
+  ## Specify log file name and write column headings.
+  gFileOut <- FileOpenWrite("subject-id-" + gSubNum + "-output.csv")
+  FilePrint( gFileOut, "Subject,Condition,Left-deck,Trial,Choice,Response-Time (ms),Earnings ($),Amount-won ($)," +
+					   "Avg-won-hiEV ($),Avg-won-loEV ($),timestamp")
+
+
+ 
+	 
+
+  #####################################################################
+  ## Instructions
+  #####################################################################
+  
+  Hide(gResponseTextBox) ; Hide(gOrLeftTextBox) ; Hide(gOrRightTextBox) ;
+  Show(gInstrTextBox)
+  Draw()
+  WaitForDownClick()
+  Hide(gInstrTextBox)
+  Draw()
+
+  #####################################################################
+  ##  Main experimental trials loop.
+  #####################################################################
+  
+  SetDecks()
+  Show(gPickCardTextBox) ; Show(gOrLeftTextBox); Show(gOrRightTextBox);
+  Draw()
+   
+  trialnum <- 1
+  lindex <- 1
+  rindex <- 1
+  total <- 0
+  amountWon <- 0
+  evAvgList <- [0,0]
+  highEVavgindex <- 1
+  lowEVavgindex <- 2
+  leftTotal <- 0
+  rightTotal <- 0
+  choice <- ""
+  
+  while(trialnum <= gParams.numtrials) {
+    time0 <- GetTime()
+
+	## Get a response from the subject.
+    resp <- WaitForClickOnTarget(gDeckObjectList,gDeckStringList)
+
+    time1 <- GetTime()
+    responseTime <- time1 - time0
+	
+	if ((gcondition1 == "bhi") or (gcondition1 == "rhi")) {
+	  gDeckLeftString 	<- ToString( Nth(ghiEVList,lindex) )
+	  gDeckRightString <- ToString( Nth(glowEVList,rindex) )
+	  
+	} else {
+	  gDeckLeftString 	<- ToString( Nth(glowEVList,lindex) )
+	  gDeckRightString <- ToString( Nth(ghiEVList,rindex) )
+	  highEVavgindex <- 2
+	  lowEVavgindex <- 1
+	}	
+	
+	if (resp == Nth(gDeckStringList,1)) {
+	  gResponseTextBox.text <- gDeckLeftString
+	  Move(gResponseTextBox, gVideoWidth/2-100, gVideoHeight/2+200)
+	  Hide(Nth(gDeckImageList,1))
+	  amountWon <- ToNumber(gDeckLeftString)
+	  leftTotal <- amountWon + leftTotal
+	  temp <- leftTotal/lindex
+	  SetElement(evAvgList,1,temp)
+	  lindex <- lindex + 1
+	  
+	  if (highEVavgindex == 1) {
+	    choice <- "highEV"
+	  } else {
+	    choice <- "lowEV"
+	  }
+	  
+	} elseif (resp == Nth(gDeckStringList,2)) {
+	  gResponseTextBox.text <- gDeckRightString
+	  Move(gResponseTextBox, gVideoWidth/2+100, gVideoHeight/2+200)
+	  Hide(Nth(gDeckImageList,2))
+	  amountWon <- ToNumber(gDeckRightString)
+	  rightTotal <- amountWon + rightTotal
+	  temp <- rightTotal/rindex
+	  SetElement(evAvgList,2,temp)
+	  rindex <- rindex + 1
+	  
+	  if (highEVavgindex == 2) {
+	    choice <- "highEV"
+	  } else {
+	    choice <- "lowEV"
+	  }
+	}
+	
+	  total <- total + amountWon
+	
+
+    Hide(gPickCardTextBox)
+    Show(gResponseTextBox)
+    Draw()
+    Wait(gparams.outcomedelay)
+
+
+	## Calculate the new total and update display.
+    gTotalLabel.text <- gTotalString + ToString(total)
+
+    ## Reset the window display for the next trial.
+    if(trialnum < gParams.numtrials) {
+      Hide(gResponseTextBox)
+      Show(gPickCardTextBox)
+	  Show(Nth(gDeckImageList,1)); Show(Nth(gDeckImageList,2))
+	}
+    Draw()
+
+    FilePrint( gFileOut, gSubNum + "," + gcondition2 + "," +
+	                     gcondition1 + "," + trialnum + "," +
+						 choice + "," + responseTime + "," +
+                         total + "," + amountWon + "," +
+					     Nth(evAvgList,highEVavgindex) + "," +
+						 Nth(evAvgList,lowEVavgindex) + "," +
+						 TimeStamp())
+
+    trialnum <- trialnum + 1
+  } # End of main while loop.
+
+  Wait(1000)
+
+  ## Close the log file.
+  FileClose(gFileOut)
+	
+  ## Show debriefing information.
+
+  SetText(gInstrTextBox, gFeedbackString)
+  Show(gInstrTextBox)
+  Draw()
+  WaitForKeyPress("<esc>")
+  
+}

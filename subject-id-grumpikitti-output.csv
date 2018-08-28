@@ -1,0 +1,18 @@
+Subject,Condition,Left-deck,Trial,Choice,Response-Time (ms),Earnings ($),Amount-won ($),Avg-won-hiEV ($),Avg-won-loEV ($),timestamp
+grumpikitti,ds,rhi,1,highEV,711,9,9,9,0,Mon Aug 27 22:42:21 2018
+grumpikitti,ds,rhi,2,highEV,331,11,2,5.5,0,Mon Aug 27 22:42:23 2018
+grumpikitti,ds,rhi,3,highEV,322,20,9,6.66667,0,Mon Aug 27 22:42:25 2018
+grumpikitti,ds,rhi,4,highEV,301,29,9,7.25,0,Mon Aug 27 22:42:27 2018
+grumpikitti,ds,rhi,5,highEV,289,38,9,7.6,0,Mon Aug 27 22:42:29 2018
+grumpikitti,ds,rhi,6,highEV,217,47,9,7.83333,0,Mon Aug 27 22:42:30 2018
+grumpikitti,ds,rhi,7,lowEV,227,52,5,7.83333,5,Mon Aug 27 22:42:32 2018
+grumpikitti,ds,rhi,8,lowEV,274,57,5,7.83333,5,Mon Aug 27 22:42:34 2018
+grumpikitti,ds,rhi,9,lowEV,270,62,5,7.83333,5,Mon Aug 27 22:42:36 2018
+grumpikitti,ds,rhi,10,lowEV,546,75,13,7.83333,7,Mon Aug 27 22:42:38 2018
+grumpikitti,ds,rhi,11,lowEV,364,80,5,7.83333,6.6,Mon Aug 27 22:42:40 2018
+grumpikitti,ds,rhi,12,highEV,233,82,2,7,6.6,Mon Aug 27 22:42:41 2018
+grumpikitti,ds,rhi,13,lowEV,318,87,5,7,6.33333,Mon Aug 27 22:42:43 2018
+grumpikitti,ds,rhi,14,highEV,407,96,9,7.25,6.33333,Mon Aug 27 22:42:45 2018
+grumpikitti,ds,rhi,15,highEV,279,105,9,7.44444,6.33333,Mon Aug 27 22:42:47 2018
+grumpikitti,ds,rhi,16,lowEV,451,110,5,7.44444,6.14286,Mon Aug 27 22:42:49 2018
+grumpikitti,ds,rhi,17,lowEV,48,115,5,7.44444,6,Mon Aug 27 22:42:50 2018
