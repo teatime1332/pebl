@@ -54,6 +54,33 @@ define DebugConsole() {
   PrintProperties(gInstrTextBox)
 
 }
+
+define SetOrBoxes(lindex,rindex) {
+
+  if (gdatasetFlag == "dd") {
+ 
+    if ((gDeckFlag == "bhi") or (gDeckFlag == "rhi")) { 
+      tempLeft 	<- Sort(Nth(gddhiEVList,lindex))
+	  tempRight <- Sort(Nth(gddlowEVList,rindex))
+	} else {
+      tempLeft 	<- Sort(Nth(gddlowEVList,lindex))
+	  tempRight <- Sort(Nth(gddhiEVList,rindex))
+	}
+	
+    gOrLeftTextBox.text <- ToString(Nth(tempLeft,1)) + 
+                         " or " + 
+      			         ToString(Nth(tempLeft,2))					   
+  				   
+    gOrRightTextBox.text  <- ToString(Nth(tempRight,1)) + 
+                          " or " + 
+      			          ToString(Nth(tempRight,2)) 							
+  
+  } else {
+    gOrLeftTextBox.text <- ""
+    gOrRightTextBox.text <- ""
+  }
+
+}
  
 #####################################################################
 ##  Define gui object properties (e.g., colors, fonts, etc.)
@@ -111,6 +138,24 @@ define SetGuiObjects() {
   ## Modified to use MakeLabel() instead of MakeTextBox() so text is centered.
   gResponseTextBox <- MakeLabel("", g36Font)
   AddObject(gResponseTextBox, gWindow)
+
+  ## Modified to use MakeLabel() instead of MakeTextBox() so text is centered.
+  gDeckRangeTextBox <- MakeLabel("Deck Range ($):", g28Font)
+  AddObject(gDeckRangeTextBox, gWindow)
+  SetFont(gDeckRangeTextBox, g22Font) 
+  Move(gDeckRangeTextBox, gBaseX-200, gBaseY-180)  
+
+  ## Modified to use MakeLabel() instead of MakeTextBox() so text is centered.
+  gRangeLeftTextBox <- MakeLabel(" ", g22Font)
+  AddObject(gRangeLeftTextBox, gWindow)
+  SetFont(gRangeLeftTextBox, g22Font) 
+  Move(gRangeLeftTextBox, gBaseX, gBaseY-180)
+
+  ## Modified to use MakeLabel() instead of MakeTextBox() so text is centered.
+  gPossibleOutcomeTextBox <- MakeLabel("Possible Outcomes ($):", g28Font)
+  AddObject(gPossibleOutcomeTextBox, gWindow)
+  SetFont(gPossibleOutcomeTextBox, g22Font) 
+  Move(gPossibleOutcomeTextBox, gBaseX-200, gBaseY-140)  
   
   ## Modified to use MakeLabel() instead of MakeTextBox() so text is centered.
   gOrLeftTextBox <- MakeLabel(" ", g22Font)
@@ -118,6 +163,12 @@ define SetGuiObjects() {
   SetFont(gOrLeftTextBox, g22Font) 
   Move(gOrLeftTextBox, gBaseX, gBaseY-140)
   
+  ## Modified to use MakeLabel() instead of MakeTextBox() so text is centered.
+  gRangeRightTextBox <- MakeLabel(" ", g22Font)
+  AddObject(gRangeRightTextBox, gWindow)
+  SetFont(gRangeRightTextBox, g22Font) 
+  Move(gRangeRightTextBox, gBaseX+200, gBaseY-180)
+
   ## Modified to use MakeLabel() instead of MakeTextBox() so text is centered.
   gOrRightTextBox <- MakeLabel(" ", g22Font)
   AddObject(gOrRightTextBox, gWindow)
@@ -163,14 +214,14 @@ define SetDecks() {
 	deckObject  <- Rectangle(gBaseX,gBaseY,100,150,gColorBlack,0)
 	deckTag     <- MakeLabel( Nth(gDeckStringList,index), g28Font)
 	
-	if ((gcondition1 == "bhi") or (gcondition1 == "blo")) {
+	if ((gDeckFlag == "bhi") or (gDeckFlag == "blo")) {
 	  if (index == 1) {
 	    deckImage   <- MakeImage(gDeckImageFileBlue)
 	  } elseif (index == 2) {
 	    deckImage   <- MakeImage(gDeckImageFileRed)	  
 	  }
 	  
-	} elseif ((gcondition1 == "rhi") or (gcondition1 == "rlo")) {
+	} elseif ((gDeckFlag == "rhi") or (gDeckFlag == "rlo")) {
 	  if (index == 1) {
 	    deckImage   <- MakeImage(gDeckImageFileRed)
 	  } elseif (index == 2) {
@@ -208,60 +259,87 @@ define SetDecks() {
 
 define SetInputs(lPar) {			
 
-  gcondition1 <- Nth(lPar,1)
-  gcondition2 <- Nth(lPar,2)
+  gDeckFlag 	<- Nth(lPar,1)
+  gdatasetFlag 	<- Nth(lPar,2)
+  gfilename 	<- Nth(lPar,3)
 
-  inputLists <- FileReadTable("input.csv",",")
-  ghiEVList        <- []
-  glowEVList       <- []
+  ginputLists <- FileReadTable(gfilename,",")
+  ghiEVColumnList        <- []
+  glowEVColumnList       <- []
+  gddhiEVList			 <- []
+  gddlowEVList			 <- []
   
   i <- 2
-  while(i <= Length(inputLists)) {
-    row <- Nth(inputLists,i)
-    PushOnEnd(ghiEVList,      ToNumber(Nth(row,1)) )
-    PushOnEnd(glowEVList,     ToNumber(Nth(row,2)) )
+  while(i <= Length(ginputLists)) {
+    row <- Nth(ginputLists,i)
+	
+    PushOnEnd(ghiEVColumnList,      ToNumber(Nth(row,1)) )
+	
+	if (gdatasetFlag == "dd") {
+	  PushOnEnd(glowEVColumnList,     ToNumber(Nth(row,3)) )
+	  temp <- []
+      PushOnEnd(temp, ToNumber(Nth(row,1)) )
+      PushOnEnd(temp, ToNumber(Nth(row,2)) )
+	  PushOnEnd(gddhiEVList, temp)
+	  temp <- []
+      PushOnEnd(temp, ToNumber(Nth(row,3)) )
+      PushOnEnd(temp, ToNumber(Nth(row,4)) )
+	  PushOnEnd(gddlowEVList, temp)
+	  
+	} else {
+	  PushOnEnd(glowEVColumnList,     ToNumber(Nth(row,2)) )  
+	}
+	
     i <- i + 1
   }
   
-  ghiEVListReduced <- ReduceList(ghiEVList)
-  glowEVListReduced <- ReduceList(glowEVList)
-
-  textTag <- ""
+  textTag <- " - "
   
-  if (gcondition2 == "ds") {
+  if (gdatasetFlag == "ds") {
     textTag <- " or "
-  } elseif (gcondition2 == "dr") {
-    textTag <- "-"
-  } else {
-    textTag <- ""
+	gDeckRangeTextBox.text <- "Possible Outcomes ($):"
+	gPossibleOutcomeTextBox.text <- ""
+  } elseif (gdatasetFlag == "dr") {
+	gPossibleOutcomeTextBox.text <- ""
   }
   
-  if ((gcondition1 == "bhi") or (gcondition1 == "rhi")) {
-  gOrLeftTextBox.text <- ToString(First(ghiEVListReduced)) + 
-                         textTag + 
-						 ToString(Last(ghiEVListReduced))
+  ghiEVColumnListReduced <- ReduceList(ghiEVColumnList)
+  glowEVColumnListReduced <- ReduceList(glowEVColumnList)
+  
+  
+  if ((gDeckFlag == "bhi") or (gDeckFlag == "rhi")) {
 
-  gOrRightTextBox.text  <- ToString(First(glowEVListReduced)) + 
+    gRangeLeftTextBox.text <- ToString(First(ghiEVColumnListReduced)) + 
+                         textTag + 
+						 ToString(Last(ghiEVColumnListReduced))
+
+    gRangeRightTextBox.text  <- ToString(First(glowEVColumnListReduced)) + 
                            textTag + 
-					       ToString(Last(glowEVListReduced))
+					       ToString(Last(glowEVColumnListReduced)) 							
   
   } else {
-    gOrLeftTextBox.text <- ToString(First(glowEVListReduced)) + 
+    gRangeLeftTextBox.text <- ToString(First(glowEVColumnListReduced)) + 
                            textTag + 
-	                       ToString(Last(glowEVListReduced))
+	                       ToString(Last(glowEVColumnListReduced))
 
-    gOrRightTextBox.text  <- ToString(First(ghiEVListReduced)) + 
+    gRangeRightTextBox.text  <- ToString(First(ghiEVColumnListReduced)) + 
                              textTag + 
-		    	             ToString(Last(ghiEVListReduced))
+		    	             ToString(Last(ghiEVColumnListReduced))	 							
+	
+  }
+  
+  if (gdatasetFlag == "e") {
+	gRangeLeftTextBox.text <- ""
+	gRangeRightTextBox.text <- ""
+	gDeckRangeTextBox.text <- ""
+	gPossibleOutcomeTextBox.text <- ""
   }
  
-  if ((gcondition2 != "ds") and (gcondition2 != "dr")) {
-    gOrLeftTextBox.text <- ""
-	gOrRightTextBox.text <- ""
-  }
+
+  SetOrBoxes(1,1)
   
   
-  parpairs <- [ ["numtrials",Length(ghiEVList)],
+  parpairs <- [ ["numtrials",Length(ghiEVColumnList)],
                 ["DelayBetweenTrials",500],
 		        ["outcomedelay",1500] ] 
   
@@ -297,7 +375,10 @@ define Start(lPar) {
   ## Instructions
   #####################################################################
   
-  Hide(gResponseTextBox) ; Hide(gOrLeftTextBox) ; Hide(gOrRightTextBox) ;
+  Hide(gResponseTextBox)
+  Hide(gRangeLeftTextBox) ; Hide(gRangeRightTextBox) ;
+  Hide(gOrLeftTextBox) ; Hide(gOrRightTextBox) ;
+  Hide(gDeckRangeTextBox) ; Hide(gPossibleOutcomeTextBox);
   Show(gInstrTextBox)
   Draw()
   WaitForDownClick()
@@ -309,7 +390,10 @@ define Start(lPar) {
   #####################################################################
   
   SetDecks()
-  Show(gPickCardTextBox) ; Show(gOrLeftTextBox); Show(gOrRightTextBox);
+  Show(gPickCardTextBox)
+  Show(gRangeLeftTextBox); Show(gRangeRightTextBox);
+  Show(gOrLeftTextBox) ; Show(gOrRightTextBox) ;
+  Show(gDeckRangeTextBox) ; Show(gPossibleOutcomeTextBox);
   Draw()
    
   trialnum <- 1
@@ -333,13 +417,13 @@ define Start(lPar) {
     time1 <- GetTime()
     responseTime <- time1 - time0
 	
-	if ((gcondition1 == "bhi") or (gcondition1 == "rhi")) {
-	  gDeckLeftString 	<- ToString( Nth(ghiEVList,lindex) )
-	  gDeckRightString <- ToString( Nth(glowEVList,rindex) )
+	if ((gDeckFlag == "bhi") or (gDeckFlag == "rhi")) {
+	  gDeckLeftString 	<- ToString( Nth(ghiEVColumnList,lindex) )
+	  gDeckRightString  <- ToString( Nth(glowEVColumnList,rindex) )
 	  
 	} else {
-	  gDeckLeftString 	<- ToString( Nth(glowEVList,lindex) )
-	  gDeckRightString <- ToString( Nth(ghiEVList,rindex) )
+	  gDeckLeftString 	<- ToString( Nth(glowEVColumnList,lindex) )
+	  gDeckRightString <- ToString( Nth(ghiEVColumnList,rindex) )
 	  highEVavgindex <- 2
 	  lowEVavgindex <- 1
 	}	
@@ -348,6 +432,7 @@ define Start(lPar) {
 	  gResponseTextBox.text <- gDeckLeftString
 	  Move(gResponseTextBox, gVideoWidth/2-100, gVideoHeight/2+200)
 	  Hide(Nth(gDeckImageList,1))
+	  Hide(gOrLeftTextBox)
 	  amountWon <- ToNumber(gDeckLeftString)
 	  leftTotal <- amountWon + leftTotal
 	  temp <- leftTotal/lindex
@@ -360,10 +445,13 @@ define Start(lPar) {
 	    choice <- "lowEV"
 	  }
 	  
+	  SetOrBoxes(lindex,rindex)
+	  
 	} elseif (resp == Nth(gDeckStringList,2)) {
 	  gResponseTextBox.text <- gDeckRightString
 	  Move(gResponseTextBox, gVideoWidth/2+100, gVideoHeight/2+200)
 	  Hide(Nth(gDeckImageList,2))
+	  Hide(gOrRightTextBox)
 	  amountWon <- ToNumber(gDeckRightString)
 	  rightTotal <- amountWon + rightTotal
 	  temp <- rightTotal/rindex
@@ -375,11 +463,13 @@ define Start(lPar) {
 	  } else {
 	    choice <- "lowEV"
 	  }
+
+	  SetOrBoxes(lindex,rindex)
 	}
 	
 	  total <- total + amountWon
 	
-
+	
     Hide(gPickCardTextBox)
     Show(gResponseTextBox)
     Draw()
@@ -394,11 +484,12 @@ define Start(lPar) {
       Hide(gResponseTextBox)
       Show(gPickCardTextBox)
 	  Show(Nth(gDeckImageList,1)); Show(Nth(gDeckImageList,2))
+	  Show(gOrLeftTextBox); Show(gOrRightTextBox);
 	}
     Draw()
 
-    FilePrint( gFileOut, gSubNum + "," + gcondition2 + "," +
-	                     gcondition1 + "," + trialnum + "," +
+    FilePrint( gFileOut, gSubNum + "," + gdatasetFlag + "," +
+	                     gDeckFlag + "," + trialnum + "," +
 						 choice + "," + responseTime + "," +
                          total + "," + amountWon + "," +
 					     Nth(evAvgList,highEVavgindex) + "," +
