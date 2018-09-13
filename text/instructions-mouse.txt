@@ -2,6 +2,5 @@ In front of you on the screen, there will be 2 decks of cards. When we begin the
 Pick a card by clicking with the mouse
 Winnings: $
 You chose: Deck 
-You've completed the game. After repaying your loan, your net winnings are $
-Congratulations!
-Thank you for participating in the experiment. Please notify the researcher that you have finished.
+If you were restricted to playing only 1 deck over 100 times, which deck do you believe would result in the most money?
+Thank you. You have now completed part 1 of the study. Please raise your hand so that the experimenter will come over to set up part 2.
