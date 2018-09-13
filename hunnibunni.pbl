@@ -133,7 +133,6 @@ define SetGuiObjects() {
   SetText(gInstrTextBox, gInstrString)
   AddObject(gInstrTextBox, gWindow)
   Move(gInstrTextBox, gVideoWidth/2-300, gVideoHeight/2-200)
-
   
   ## Modified to use MakeLabel() instead of MakeTextBox() so text is centered.
   gResponseTextBox <- MakeLabel("", g36Font)
@@ -364,8 +363,9 @@ define Start(lPar) {
 
   ## Specify log file name and write column headings.
   gFileOut <- FileOpenWrite("subject-id-" + gSubNum + "-output.csv")
-  FilePrint( gFileOut, "Subject,Condition,Left-deck,Trial,Choice,Response-Time (ms),Earnings ($),Amount-won ($)," +
-					   "Avg-won-hiEV ($),Avg-won-loEV ($),timestamp")
+  FilePrint( gFileOut, "Subject,Condition,Left-deck,Trial,Choice," + 
+             "Response-Time (ms),Earnings ($),Amount-won ($)," +
+             "Avg-won-hiEV ($),Avg-won-loEV ($),timestamp, file-input")
 
 
  
@@ -494,21 +494,59 @@ define Start(lPar) {
                          total + "," + amountWon + "," +
 					     Nth(evAvgList,highEVavgindex) + "," +
 						 Nth(evAvgList,lowEVavgindex) + "," +
-						 TimeStamp())
+						 TimeStamp() + "," + gfilename )
 
     trialnum <- trialnum + 1
+  
   } # End of main while loop.
 
-  Wait(1000)
+  Wait(3000)
+  gTotalString  <- Nth(gtextlist, 5)
+  gFeedbackString <- Nth(gtextlist, 6)
+  
 
-  ## Close the log file.
-  FileClose(gFileOut)
-	
+  SetText(gInstrTextBox,gTotalString)
+  SetFont(gInstrTextBox, g36Font)
+  Show(gInstrTextBox)
+  Show(Nth(gDeckImageList,1)); Show(Nth(gDeckImageList,2))
+  
+  Hide(gResponseTextBox)
+  Hide(gTotalLabel)
+  Hide(gRangeLeftTextBox); Hide(gRangeRightTextBox);
+  Hide(gOrLeftTextBox) ; Hide(gOrRightTextBox) ;
+  Hide(gDeckRangeTextBox) ; Hide(gPossibleOutcomeTextBox);
+  Hide(gPickCardTextBox)
+  Draw()
+  Wait(3000)
+  
+  resp <- WaitForClickOnTarget(gDeckObjectList,gDeckStringList)
+  
+  if (resp == Nth(gDeckStringList,1)) {
+    if (highEVavgindex == 1) {
+      FilePrint(gFileOut,"high-EV-Deck")
+    } else {
+      FilePrint(gFileOut,"low-EV-Deck")
+    }
+  } elseif (resp == Nth(gDeckStringList,2)) {
+    if (highEVavgindex == 2) {
+      FilePrint(gFileOut,"high-EV-Deck")
+    } else {
+      FilePrint(gFileOut,"low-EV-Deck")
+    }
+  }	
+  
   ## Show debriefing information.
-
+  Hide(Nth(gDeckImageList,1)); Hide(Nth(gDeckImageList,2))
+  Hide(Nth(gDeckObjectList,1)); Hide(Nth(gDeckObjectList,2))
+  Hide(gTotalLabel)
   SetText(gInstrTextBox, gFeedbackString)
+  SetFont(gInstrTextBox, g36Font)
   Show(gInstrTextBox)
   Draw()
   WaitForKeyPress("<esc>")
+  
+  
+  ## Close the log file.
+  FileClose(gFileOut)
   
 }
