@@ -511,7 +511,6 @@ define Start(lPar) {
   Show(Nth(gDeckImageList,1)); Show(Nth(gDeckImageList,2))
   
   Hide(gResponseTextBox)
-  Hide(gTotalLabel)
   Hide(gRangeLeftTextBox); Hide(gRangeRightTextBox);
   Hide(gOrLeftTextBox) ; Hide(gOrRightTextBox) ;
   Hide(gDeckRangeTextBox) ; Hide(gPossibleOutcomeTextBox);
