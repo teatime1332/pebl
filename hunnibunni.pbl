@@ -57,7 +57,7 @@ define DebugConsole() {
 
 define SetOrBoxes(lindex,rindex) {
 
-  if (gdatasetFlag == "dd") {
+  if ((gdatasetFlag == "dd") or (gdatasetFlag == "ht")) {
  
     if ((gDeckFlag == "bhi") or (gDeckFlag == "rhi")) { 
       tempLeft 	<- Sort(Nth(gddhiEVList,lindex))
@@ -274,7 +274,7 @@ define SetInputs(lPar) {
 	
     PushOnEnd(ghiEVColumnList,      ToNumber(Nth(row,1)) )
 	
-	if (gdatasetFlag == "dd") {
+	if ((gdatasetFlag == "dd") or (gdatasetFlag == "ht")) {
 	  PushOnEnd(glowEVColumnList,     ToNumber(Nth(row,3)) )
 	  temp <- []
       PushOnEnd(temp, ToNumber(Nth(row,1)) )
@@ -294,10 +294,11 @@ define SetInputs(lPar) {
   
   textTag <- " - "
   
-  if (gdatasetFlag == "ds") {
+  if ((gdatasetFlag == "ds") or (gdatasetFlag == "ht")) {
     textTag <- " or "
 	gDeckRangeTextBox.text <- "Possible Outcomes ($):"
 	gPossibleOutcomeTextBox.text <- ""
+	
   } elseif (gdatasetFlag == "dr") {
 	gPossibleOutcomeTextBox.text <- ""
   }
@@ -334,6 +335,10 @@ define SetInputs(lPar) {
 	gPossibleOutcomeTextBox.text <- ""
   }
  
+  if (gdatasetFlag == "ht") {
+	gRangeLeftTextBox.text <- ""
+	gRangeRightTextBox.text <- ""    
+  }
 
   SetOrBoxes(1,1)
   
@@ -363,13 +368,22 @@ define Start(lPar) {
 
   ## Specify log file name and write column headings.
   gFileOut <- FileOpenWrite("subject-id-" + gSubNum + "-output.csv")
-  FilePrint( gFileOut, "Subject,Condition,Left-deck,Trial,Choice," + 
+  
+  if (gdatasetFlag == "ht") {
+
+  FilePrint( gFileOut, "Subject,Condition,Left-deck,Trial," + 
+             "Data1,Data2,Data3,Data4," + 
              "Response-Time (ms),Earnings ($),Amount-won ($)," +
              "Avg-won-hiEV ($),Avg-won-loEV ($),timestamp, file-input")
-
-
+  } else {
+  
+  FilePrint( gFileOut, "Subject,Condition,Left-deck,Trial," +
+             "Choice," + 
+             "Response-Time (ms),Earnings ($),Amount-won ($)," +
+             "Avg-won-hiEV ($),Avg-won-loEV ($),timestamp, file-input")
+  }
  
-	 
+ 
 
   #####################################################################
   ## Instructions
@@ -439,10 +453,22 @@ define Start(lPar) {
 	  SetElement(evAvgList,1,temp)
 	  lindex <- lindex + 1
 	  
+	  if (gdatasetFlag == "ht") {
+	    rindex <- rindex + 1
+	  }
+	  
 	  if (highEVavgindex == 1) {
+	    if (gdatasetFlag == "ht") {
+		  choice <- "riskSeeking"
+		} else {
 	    choice <- "highEV"
+		}
 	  } else {
+	    if (gdatasetFlag == "ht") {
+		  choice <- "riskAverse"
+		} else {
 	    choice <- "lowEV"
+		}
 	  }
 	  
 	  SetOrBoxes(lindex,rindex)
@@ -457,11 +483,23 @@ define Start(lPar) {
 	  temp <- rightTotal/rindex
 	  SetElement(evAvgList,2,temp)
 	  rindex <- rindex + 1
+
+	  if (gdatasetFlag == "ht") {
+	    lindex <- lindex + 1
+	  }
 	  
 	  if (highEVavgindex == 2) {
+	    if (gdatasetFlag == "ht") {
+		  choice <- "riskSeeking"
+		} else {
 	    choice <- "highEV"
+		}
 	  } else {
+	    if (gdatasetFlag == "ht") {
+		  choice <- "riskAverse"
+		} else {
 	    choice <- "lowEV"
+		}
 	  }
 
 	  SetOrBoxes(lindex,rindex)
@@ -488,14 +526,34 @@ define Start(lPar) {
 	}
     Draw()
 
+	if (gdatasetFlag == "ht") {
+
+	row <- Nth(ginputLists,(trialnum+1))
+	data1 <- Nth(row,1)
+	data2 <- Nth(row,2)
+	data3 <- Nth(row,3)
+	data4 <- Nth(row,4)
     FilePrint( gFileOut, gSubNum + "," + gdatasetFlag + "," +
 	                     gDeckFlag + "," + trialnum + "," +
-						 choice + "," + responseTime + "," +
+						 data1 + "," + data2 + "," + 
+						 data3 + "," + data4 + "," +
+						 responseTime + "," +
                          total + "," + amountWon + "," +
 					     Nth(evAvgList,highEVavgindex) + "," +
 						 Nth(evAvgList,lowEVavgindex) + "," +
-						 TimeStamp() + "," + gfilename )
-
+						 TimeStamp() + "," + gfilename )	
+    } else {
+	
+    FilePrint( gFileOut, gSubNum + "," + gdatasetFlag + "," +
+	                     gDeckFlag + "," + trialnum + "," +
+						 choice + "," + 
+						 responseTime + "," +
+                         total + "," + amountWon + "," +
+					     Nth(evAvgList,highEVavgindex) + "," +
+						 Nth(evAvgList,lowEVavgindex) + "," +
+						 TimeStamp() + "," + gfilename )	
+	}
+	
     trialnum <- trialnum + 1
   
   } # End of main while loop.
