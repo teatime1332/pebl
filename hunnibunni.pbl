@@ -446,7 +446,10 @@ define Start(lPar) {
 	  gResponseTextBox.text <- gDeckLeftString
 	  Move(gResponseTextBox, gVideoWidth/2-100, gVideoHeight/2+200)
 	  Hide(Nth(gDeckImageList,1))
+	  Hide(gOrRightTextBox)
 	  Hide(gOrLeftTextBox)
+      Hide(gRangeLeftTextBox)
+	  Hide(gRangeRightTextBox)
 	  amountWon <- ToNumber(gDeckLeftString)
 	  leftTotal <- amountWon + leftTotal
 	  temp <- leftTotal/lindex
@@ -478,6 +481,9 @@ define Start(lPar) {
 	  Move(gResponseTextBox, gVideoWidth/2+100, gVideoHeight/2+200)
 	  Hide(Nth(gDeckImageList,2))
 	  Hide(gOrRightTextBox)
+	  Hide(gOrLeftTextBox)
+      Hide(gRangeLeftTextBox)
+	  Hide(gRangeRightTextBox)
 	  amountWon <- ToNumber(gDeckRightString)
 	  rightTotal <- amountWon + rightTotal
 	  temp <- rightTotal/rindex
@@ -523,6 +529,7 @@ define Start(lPar) {
       Show(gPickCardTextBox)
 	  Show(Nth(gDeckImageList,1)); Show(Nth(gDeckImageList,2))
 	  Show(gOrLeftTextBox); Show(gOrRightTextBox);
+      Show(gRangeLeftTextBox); Show(gRangeRightTextBox);
 	}
     Draw()
 
