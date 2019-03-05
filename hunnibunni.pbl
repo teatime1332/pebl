@@ -474,7 +474,10 @@ define Start(lPar) {
 		}
 	  }
 	  
-	  SetOrBoxes(lindex,rindex)
+	  if ((lindex <= gParams.numtrials) and (rindex <= gParams.numtrials)) {
+      SetOrBoxes(lindex,rindex)
+	  }
+	  
 	  
 	} elseif (resp == Nth(gDeckStringList,2)) {
 	  gResponseTextBox.text <- gDeckRightString
@@ -508,7 +511,10 @@ define Start(lPar) {
 		}
 	  }
 
-	  SetOrBoxes(lindex,rindex)
+	  if ((lindex <= gParams.numtrials) and (rindex <= gParams.numtrials)) {
+      SetOrBoxes(lindex,rindex)
+	  }
+
 	}
 	
 	  total <- total + amountWon
